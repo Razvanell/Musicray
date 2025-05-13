@@ -1,0 +1,43 @@
+package razvanell.musicrays.security.login;
+
+import razvanell.musicrays.model.user.User;
+import razvanell.musicrays.security.JwtTokenUtil;
+import razvanell.musicrays.security.util.ServerResponse;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(path = "api/login")
+@AllArgsConstructor
+public class LoginController {
+
+    private final JwtTokenUtil jwtTokenUtil;
+    private final AuthenticationManager authenticationManager;
+
+    @PostMapping
+    public ServerResponse loginWithToken(@RequestBody LoginRequest request) {
+        System.out.println(request.getEmail());
+        System.out.println(request.getPassword());
+        try {
+            Authentication authenticate = authenticationManager
+                    .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+            User user = (User) authenticate.getPrincipal();
+
+            // Preparing object for client
+            LoginResponse loginResponse = new LoginResponse(jwtTokenUtil.generateAccessToken(user), user);
+            return new ServerResponse(HttpStatus.OK.value(), "Welcome " + user.getFirstName(), loginResponse);
+
+        } catch (BadCredentialsException ex) {
+            System.out.println("Bad credentials");
+            return new ServerResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        }
+    }
+
+}
+
