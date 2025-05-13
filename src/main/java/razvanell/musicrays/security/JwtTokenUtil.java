@@ -18,7 +18,7 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class JwtTokenUtil{
 
-    private final String jwtSecret = "zdtlD3JK56m6wTTgsNFhqzjqP";
+    private final String jwtSecret = "zdtlD3JK56m6wTTgsNFhqzjqPzdtlD3JK56m6wTTgsNFhqzjqPzd12fas1f2fsf211ffdff2f32agngulguiltlD3JK56m6wTTgsNFhqzjqP";
     private final String jwtIssuer = "playlistdb.project";
 
     public String generateAccessToken(User user) {

@@ -28,10 +28,10 @@ public class DatabaseUpdaterConfig {
     @Bean
     CommandLineRunner trackCommandLineRunner() {
         return args -> {
-            addDefaultUsers();
-            addTracks();
-            addDefaultPlaylists();
-            addTracksToPlaylists();
+//            addDefaultUsers();
+//            addTracks();
+//            addDefaultPlaylists();
+//            addTracksToPlaylists();
         };
     }
 
