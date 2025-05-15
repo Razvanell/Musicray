@@ -40,6 +40,7 @@ public class PlaylistController {
     @PutMapping(path = "add-track-to-playlist/{trackId}")
     public ResponseEntity<?> addTrack(@RequestBody Playlist playlist, @PathVariable Long trackId) {
         playlistService.addTrack(playlist, trackId);
+        System.out.println("Received track " + trackId + " playlist: " + playlist);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

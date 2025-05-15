@@ -33,7 +33,6 @@ public class DatabaseUpdaterConfig {
     @Bean
     CommandLineRunner trackCommandLineRunner() {
 
-
         String ddlAuto = configProp.getConfigValue("spring.jpa.hibernate.ddl-auto");
         if ("create".equals(ddlAuto) || "create-drop".equals(ddlAuto)) {
             return args -> {
