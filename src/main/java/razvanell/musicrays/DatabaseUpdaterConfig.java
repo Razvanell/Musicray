@@ -1,5 +1,8 @@
 package razvanell.musicrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import razvanell.musicrays.model.playlist.Playlist;
 import razvanell.musicrays.model.playlist.PlaylistRepository;
 import razvanell.musicrays.model.track.Track;
@@ -21,18 +24,29 @@ import java.util.List;
 @AllArgsConstructor
 public class DatabaseUpdaterConfig {
 
+    @Autowired
+    ConfigProperties configProp = new ConfigProperties();
     private final TrackRepository trackRepository;
     private final UserRepository userRepository;
     private final PlaylistRepository playlistRepository;
 
     @Bean
     CommandLineRunner trackCommandLineRunner() {
-        return args -> {
-//            addDefaultUsers();
-//            addTracks();
-//            addDefaultPlaylists();
-//            addTracksToPlaylists();
-        };
+
+
+        String ddlAuto = configProp.getConfigValue("spring.jpa.hibernate.ddl-auto");
+        if ("create".equals(ddlAuto) || "create-drop".equals(ddlAuto)) {
+            return args -> {
+                addDefaultUsers();
+                addTracks();
+                addDefaultPlaylists();
+                addTracksToPlaylists();
+            };
+        } else {
+            return args -> {
+            };
+        }
+
     }
 
     void addDefaultUsers() {

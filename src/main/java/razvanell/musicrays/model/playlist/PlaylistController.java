@@ -43,7 +43,7 @@ public class PlaylistController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping(path = "remove-track/{trackId}")
+    @PutMapping(path = "remove-track-from-playlist/{trackId}")
     public ResponseEntity<?> removeTrack(@RequestBody Playlist playlist, @PathVariable Long trackId) {
         playlistService.removeTrack(playlist, trackId);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,12 +1,12 @@
 package razvanell.musicrays.model.playlist;
 
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 import razvanell.musicrays.model.track.Track;
 import razvanell.musicrays.model.track.TrackRepository;
 import razvanell.musicrays.model.user.UserRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -22,7 +22,7 @@ public class PlaylistService {
     }
 
     public void postPlaylist(Playlist playlist, Long userId) {
-        if(playlistRepository.findByName(playlist.getName()).isPresent()) {
+        if (playlistRepository.findByName(playlist.getName()).isPresent()) {
             throw new IllegalStateException("A playlist with this name already exists");
         }
         playlist.setUser(userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("User does not exist")));
@@ -31,23 +31,20 @@ public class PlaylistService {
 
     @Transactional
     public void deletePlaylist(Long playlistId) {
-        if(!playlistRepository.existsById(playlistId)) {
+        if (!playlistRepository.existsById(playlistId)) {
             throw new IllegalStateException("Playlist does not exist in the database");
         }
-        System.out.println("what the fuck");
         playlistRepository.deleteById(playlistId);
     }
 
     @Transactional
     public void putUser(Playlist playlist) {
         Playlist oldPlaylist = playlistRepository.findById(playlist.getId()).orElseThrow(() -> new IllegalStateException("Playlist does not exist"));
-
-        if(playlist.getName() != null) oldPlaylist.setName(playlist.getName());
-
+        if (playlist.getName() != null) oldPlaylist.setName(playlist.getName());
     }
 
-    @Transactional
     public void addTrack(Playlist playlist, Long trackId) {
+        System.out.println("I am trying to add");
         Playlist oldPlaylist = playlistRepository.findById(playlist.getId()).orElseThrow(() -> new IllegalStateException("Playlist does not exist"));
         Track trackToBeAdded = trackRepository.findById(trackId).orElseThrow(() -> new IllegalStateException("Track does not exist"));
         oldPlaylist.getTracks().add(trackToBeAdded);
