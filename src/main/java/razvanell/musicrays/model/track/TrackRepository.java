@@ -20,4 +20,7 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
     @Query("SELECT track FROM Track track WHERE track.title = ?1")
     Optional<Track> findByTitle(String title);
 
+    @Query("SELECT track FROM Track track WHERE track.artist = ?1 AND track.title = ?2")
+    Optional<Track> findByArtistAndTitle(String artist, String title);
+
 }

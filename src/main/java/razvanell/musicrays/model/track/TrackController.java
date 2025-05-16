@@ -25,7 +25,7 @@ public class TrackController {
     @GetMapping(path = "/random")
     public ResponseEntity<Set<Track>> getFiveRandomTracks() {
         Set<Track> tracks = new LinkedHashSet<>();
-        while(tracks.size() < 5) {
+        while(tracks.size() < 10) {
             tracks.add(trackService.randomTrack());
         }
         return new ResponseEntity<>(tracks, HttpStatus.OK);

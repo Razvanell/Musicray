@@ -33,9 +33,13 @@ public class PlaylistController {
 
     @PutMapping(path = "put")
     public ResponseEntity<?> putPlaylist(@RequestBody Playlist playlist) {
-        playlistService.putUser(playlist);
+        if (playlist.getId() == null) {
+            return new ResponseEntity<>("Playlist ID must not be null", HttpStatus.BAD_REQUEST);
+        }
+        playlistService.putPlaylist(playlist);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 
     @PutMapping(path = "add-track-to-playlist/{trackId}")
     public ResponseEntity<?> addTrack(@RequestBody Playlist playlist, @PathVariable Long trackId) {

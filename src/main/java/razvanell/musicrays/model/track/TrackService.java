@@ -20,10 +20,6 @@ public class TrackService {
         return trackRepository.findAll();
     }
 
-    public List<Track> getFiveTracks() {
-        return trackRepository.findTop5ByOrderByArtistAsc();
-    }
-
     public Track randomTrack() {
         long qty = trackRepository.count();
         int idx = (int)(Math.random() * qty);

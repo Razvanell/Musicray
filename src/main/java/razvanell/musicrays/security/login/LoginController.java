@@ -21,8 +21,6 @@ public class LoginController {
 
     @PostMapping
     public ServerResponse loginWithToken(@RequestBody LoginRequest request) {
-        System.out.println(request.getEmail());
-        System.out.println(request.getPassword());
         try {
             Authentication authenticate = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
