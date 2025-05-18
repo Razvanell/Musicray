@@ -6,7 +6,6 @@ import razvanell.musicrays.model.track.TrackRepository;
 import razvanell.musicrays.model.user.User;
 import razvanell.musicrays.model.user.UserRepository;
 import razvanell.musicrays.model.user.UserRole;
-import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,7 @@ public class PlaylistServiceTest {
         user.setFirstName("Jane");
         user.setLastName("Doe");
         user.setEmail("jane.doe@example.org");
-        user.setPassword("iloveyou");
+        user.setPassword("lovey");
         user.setImageUrl("https://example.org/example");
         user.setUserRole(UserRole.USER);
         user.setEnabled(true);

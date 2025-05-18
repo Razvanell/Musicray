@@ -44,8 +44,8 @@ public class UserService implements UserDetailsService {
                 throw new IllegalStateException("Resent confirmation mail");
             }
         }
-        sendConfirmationEmail(user);
         userRepository.save(user);
+        sendConfirmationEmail(user);
     }
 
     private void sendConfirmationEmail(User user) {
