@@ -32,7 +32,7 @@ public class EmailService implements EmailSender {
             mimeMessageHelper.setText(email, true); //true sends it as a html email
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setSubject("Confirm email");
-            mimeMessageHelper.setFrom("palylist-db@user.com");
+            mimeMessageHelper.setFrom("admin@musicrays.com");
             javaMailSender.send(mimeMessage);
         }catch (MessagingException e) {
             LOGGER.error("Failed to send email", e);

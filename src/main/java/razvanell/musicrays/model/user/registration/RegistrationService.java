@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -46,12 +47,19 @@ public class RegistrationService {
                 .imageUrl(request.getImageUrl())
                 .userRole(UserRole.USER)
                 .build());
+
         return new ServerResponse(HttpStatus.OK.value(), "User created", request);
     }
 
     @Transactional
     public ServerResponse confirmToken(String token) {
-        ConfirmationToken confirmationToken = confirmationTokenService.getToken(token).get();
+        Optional<ConfirmationToken> confirmationTokenOptional = confirmationTokenService.getToken(token);
+
+        if (confirmationTokenOptional.isEmpty()) {
+            return new ServerResponse(HttpStatus.BAD_REQUEST.value(), "Token not found");
+        }
+
+        ConfirmationToken confirmationToken = confirmationTokenOptional.get();
 
         if (confirmationToken.getConfirmedAt() != null) {
             return new ServerResponse(HttpStatus.BAD_REQUEST.value(), "Email already confirmed");
@@ -65,6 +73,7 @@ public class RegistrationService {
         userRepository.enableUser(confirmationToken.getUser().getEmail());
         return new ServerResponse(HttpStatus.OK.value(), "Token confirmed", null);
     }
+
 
 
 
