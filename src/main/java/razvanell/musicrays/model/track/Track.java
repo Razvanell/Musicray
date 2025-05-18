@@ -1,6 +1,5 @@
 package razvanell.musicrays.model.track;
 
-import razvanell.musicrays.model.playlist.Playlist;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import razvanell.musicrays.model.playlist.Playlist;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -31,12 +31,12 @@ public class Track implements Serializable {
     private String path;
     @JsonIgnore
     @ManyToMany(mappedBy = "tracks", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
-    @Fetch(value= FetchMode.SELECT)
+    @Fetch(value = FetchMode.SELECT)
     private Set<Playlist> playlists;
 
     /* Without this override the method creates a stackoverflow error due to many-to-many relationship.
-    * Removing playlists from the return breaks the loop.
-    * */
+     * Removing playlists from the return breaks the loop.
+     * */
     @Override
     public int hashCode() {
         return Objects.hash(id, artist, title, path);

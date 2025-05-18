@@ -5,7 +5,10 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,7 +28,7 @@ public class TrackController {
     @GetMapping(path = "/random")
     public ResponseEntity<Set<Track>> getFiveRandomTracks() {
         Set<Track> tracks = new LinkedHashSet<>();
-        while(tracks.size() < 10) {
+        while (tracks.size() < 10) {
             tracks.add(trackService.randomTrack());
         }
         return new ResponseEntity<>(tracks, HttpStatus.OK);
@@ -39,7 +42,9 @@ public class TrackController {
 
     @GetMapping(path = "/play/{trackId}")
     public ResponseEntity<InputStreamResource> playTrackById(@PathVariable("trackId") Long id) throws FileNotFoundException {
-        String filePath = trackService.playTrackById(id).get().getPath();
+        String filePath = trackService.playTrackById(id)
+                .map(Track::getPath)
+                .orElseThrow(() -> new FileNotFoundException("Track not found with id: " + id));
 
         File file = new File(filePath);
         InputStream inputStream = new FileInputStream(filePath);

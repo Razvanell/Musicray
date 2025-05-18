@@ -1,8 +1,8 @@
 package razvanell.musicrays.model.user.registration;
 
-import razvanell.musicrays.security.util.ServerResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import razvanell.musicrays.security.util.ServerResponse;
 
 @RestController
 @RequestMapping(path = "api/registration")

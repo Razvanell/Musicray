@@ -1,8 +1,6 @@
 package razvanell.musicrays.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import razvanell.musicrays.model.playlist.Playlist;
-import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +9,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import razvanell.musicrays.model.playlist.Playlist;
+import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,7 +46,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<ConfirmationToken> tokens;
 
-    /** Spring Security methods */
+    /**
+     * Spring Security methods
+     */
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

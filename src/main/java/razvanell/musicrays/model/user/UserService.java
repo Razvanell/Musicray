@@ -1,16 +1,16 @@
 package razvanell.musicrays.model.user;
 
-import razvanell.musicrays.model.user.registration.email.EmailBuilder;
-import razvanell.musicrays.model.user.registration.email.EmailSender;
-import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
-import razvanell.musicrays.model.user.registration.token.ConfirmationTokenService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import razvanell.musicrays.model.user.registration.email.EmailBuilder;
+import razvanell.musicrays.model.user.registration.email.EmailSender;
+import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
+import razvanell.musicrays.model.user.registration.token.ConfirmationTokenService;
 
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -36,8 +36,8 @@ public class UserService implements UserDetailsService {
 
     public void postUser(User user) {
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
-        if(existingUser.isPresent()) {
-            if(existingUser.get().isEnabled()) {
+        if (existingUser.isPresent()) {
+            if (existingUser.get().isEnabled()) {
                 throw new IllegalStateException("Email already registered & confirmed");
             } else {
                 sendConfirmationEmail(existingUser.get());
@@ -75,9 +75,9 @@ public class UserService implements UserDetailsService {
 
         User oldUser = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new IllegalStateException("User with this email does not exist"));
 
-        if(user.getFirstName() != null) oldUser.setFirstName(user.getFirstName());
-        if(user.getLastName() != null) oldUser.setLastName(user.getLastName());
-        if(user.getImageUrl() != null) oldUser.setImageUrl(user.getImageUrl());
+        if (user.getFirstName() != null) oldUser.setFirstName(user.getFirstName());
+        if (user.getLastName() != null) oldUser.setLastName(user.getLastName());
+        if (user.getImageUrl() != null) oldUser.setImageUrl(user.getImageUrl());
     }
 
 }

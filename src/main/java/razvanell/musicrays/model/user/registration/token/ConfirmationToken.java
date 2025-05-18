@@ -1,11 +1,12 @@
 package razvanell.musicrays.model.user.registration.token;
 
-import razvanell.musicrays.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import razvanell.musicrays.model.user.User;
+
 import java.time.LocalDateTime;
 
 @Entity

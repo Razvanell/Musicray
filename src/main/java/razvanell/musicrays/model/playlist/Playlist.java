@@ -1,12 +1,12 @@
 package razvanell.musicrays.model.playlist;
 
-import razvanell.musicrays.model.track.Track;
-import razvanell.musicrays.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import razvanell.musicrays.model.track.Track;
+import razvanell.musicrays.model.user.User;
 
 import java.util.Set;
 
@@ -28,8 +28,8 @@ public class Playlist {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "playlists_to_tracks",
-            joinColumns = { @JoinColumn(name = "playlist_id") },
-            inverseJoinColumns = { @JoinColumn(name = "track_id") })
+            joinColumns = {@JoinColumn(name = "playlist_id")},
+            inverseJoinColumns = {@JoinColumn(name = "track_id")})
     private Set<Track> tracks;
 
 }

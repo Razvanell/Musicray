@@ -1,6 +1,10 @@
 package razvanell.musicrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import razvanell.musicrays.model.playlist.Playlist;
 import razvanell.musicrays.model.playlist.PlaylistRepository;
 import razvanell.musicrays.model.track.Track;
@@ -8,26 +12,21 @@ import razvanell.musicrays.model.track.TrackRepository;
 import razvanell.musicrays.model.user.User;
 import razvanell.musicrays.model.user.UserRepository;
 import razvanell.musicrays.model.user.UserRole;
-import lombok.AllArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import jakarta.transaction.Transactional;
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Configuration
 @AllArgsConstructor
 public class DatabaseUpdaterConfig {
 
-    @Autowired
-    ConfigProperties configProp;
     private final TrackRepository trackRepository;
     private final UserRepository userRepository;
     private final PlaylistRepository playlistRepository;
+    private final ConfigProperties configProp;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
     @Bean
     CommandLineRunner trackCommandLineRunner() {
@@ -41,14 +40,12 @@ public class DatabaseUpdaterConfig {
             };
         } else {
             return args -> {
+                // No action on non-create ddl-auto
             };
         }
-
     }
 
     void addDefaultUsers() {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
         if (userRepository.findByEmail("admin@user.com").isEmpty()) {
             User adminUser = User.builder()
                     .firstName("admin")
@@ -76,16 +73,23 @@ public class DatabaseUpdaterConfig {
         }
     }
 
-
     void addTracks() {
         File folder = new File("src/main/resources/musicfiles");
         File[] listOfFiles = folder.listFiles();
 
-        assert listOfFiles != null;
+        if (listOfFiles == null) {
+            System.err.println("Music files folder not found or empty.");
+            return;
+        }
+
         for (File file : listOfFiles) {
             try {
                 if (file.isFile()) {
                     String[] fileinfo = file.getName().split(" - ");
+                    if (fileinfo.length < 2) {
+                        System.err.println("Skipping file with invalid name format: " + file.getName());
+                        continue;
+                    }
                     String artist = fileinfo[0].trim();
                     String title = fileinfo[1].replaceFirst("[.][^.]+$", "").trim();
 
@@ -100,15 +104,22 @@ public class DatabaseUpdaterConfig {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println("Failed to process file: " + file.getName());
             }
         }
     }
 
-
     void addDefaultPlaylists() {
-        User admin = userRepository.findById(1L).orElseThrow();
-        User user = userRepository.findById(2L).orElseThrow();
+        Optional<User> adminOpt = userRepository.findByEmail("admin@user.com");
+        Optional<User> userOpt = userRepository.findByEmail("user@user.com");
+
+        if (adminOpt.isEmpty() || userOpt.isEmpty()) {
+            System.err.println("Required users not found to create playlists.");
+            return;
+        }
+
+        User admin = adminOpt.get();
+        User user = userOpt.get();
 
         List<Playlist> defaultPlaylists = List.of(
                 Playlist.builder().user(admin).name("Metal").build(),
@@ -117,7 +128,6 @@ public class DatabaseUpdaterConfig {
                 Playlist.builder().user(user).name("Electronic").build()
         );
 
-        // Check if playlist already exists
         for (Playlist playlist : defaultPlaylists) {
             boolean exists = playlistRepository
                     .findByUserAndName(playlist.getUser(), playlist.getName())
@@ -128,29 +138,47 @@ public class DatabaseUpdaterConfig {
         }
     }
 
-
-    @Transactional
     void addTracksToPlaylists() {
-        Track track1 = trackRepository.findById(1L).orElseThrow();
-        Track track2 = trackRepository.findById(2L).orElseThrow();
-        Track track4 = trackRepository.findById(4L).orElseThrow();
-        Track track7 = trackRepository.findById(7L).orElseThrow();
+        // Find the playlists by user and name instead of ID
+        Optional<User> adminOpt = userRepository.findByEmail("admin@user.com");
+        if (adminOpt.isEmpty()) {
+            System.err.println("Admin user not found, cannot add tracks to playlists.");
+            return;
+        }
+        User admin = adminOpt.get();
 
-        Playlist metal = playlistRepository.findById(1L).orElseThrow();
-        Playlist rock = playlistRepository.findById(2L).orElseThrow();
+        Optional<Playlist> metalOpt = playlistRepository.findByUserAndName(admin, "Metal");
+        Optional<Playlist> rockOpt = playlistRepository.findByUserAndName(admin, "Rock");
 
-        // Set.add() prevents duplicates
+        if (metalOpt.isEmpty() || rockOpt.isEmpty()) {
+            System.err.println("Required playlists (Metal or Rock) not found.");
+            return;
+        }
+
+        Playlist metal = metalOpt.get();
+        Playlist rock = rockOpt.get();
+
+        // Find tracks by artist/title instead of fixed IDs to avoid fragility
+        Optional<Track> track1Opt = trackRepository.findByArtistAndTitle("SomeArtist1", "SomeTitle1");
+        Optional<Track> track2Opt = trackRepository.findByArtistAndTitle("SomeArtist2", "SomeTitle2");
+        Optional<Track> track4Opt = trackRepository.findByArtistAndTitle("SomeArtist4", "SomeTitle4");
+        Optional<Track> track7Opt = trackRepository.findByArtistAndTitle("SomeArtist7", "SomeTitle7");
+
+        // Replace the above with your actual artist/title or get tracks differently
+        if (track1Opt.isEmpty() || track2Opt.isEmpty() || track4Opt.isEmpty() || track7Opt.isEmpty()) {
+            System.err.println("One or more required tracks not found.");
+            return;
+        }
+
         Set<Track> metalTracks = metal.getTracks();
-        metalTracks.add(track1);
-        metalTracks.add(track2);
-        metalTracks.add(track4);
+        metalTracks.add(track1Opt.get());
+        metalTracks.add(track2Opt.get());
+        metalTracks.add(track4Opt.get());
 
         Set<Track> rockTracks = rock.getTracks();
-        rockTracks.add(track7);
+        rockTracks.add(track7Opt.get());
 
         playlistRepository.saveAll(List.of(metal, rock));
     }
-
-
 
 }

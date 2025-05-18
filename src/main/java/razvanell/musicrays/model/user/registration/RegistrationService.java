@@ -1,5 +1,10 @@
 package razvanell.musicrays.model.user.registration;
 
+import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
 import razvanell.musicrays.model.user.User;
 import razvanell.musicrays.model.user.UserRepository;
 import razvanell.musicrays.model.user.UserRole;
@@ -8,13 +13,7 @@ import razvanell.musicrays.model.user.registration.email.EmailValidator;
 import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
 import razvanell.musicrays.model.user.registration.token.ConfirmationTokenService;
 import razvanell.musicrays.security.util.ServerResponse;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
 
-
-import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -73,8 +72,6 @@ public class RegistrationService {
         userRepository.enableUser(confirmationToken.getUser().getEmail());
         return new ServerResponse(HttpStatus.OK.value(), "Token confirmed", null);
     }
-
-
 
 
 }

@@ -1,5 +1,11 @@
 package razvanell.musicrays.model.user.registration;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import razvanell.musicrays.model.user.User;
 import razvanell.musicrays.model.user.UserRole;
 import razvanell.musicrays.model.user.UserService;
@@ -7,12 +13,6 @@ import razvanell.musicrays.model.user.registration.email.EmailValidator;
 import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
 import razvanell.musicrays.model.user.registration.token.ConfirmationTokenService;
 import razvanell.musicrays.security.util.ServerResponse;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

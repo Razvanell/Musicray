@@ -1,14 +1,11 @@
 package razvanell.musicrays.model.track;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,19 +15,14 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class TrackServiceTest {
 
-    @Mock
+    @MockitoBean
     private TrackRepository trackRepository;
 
+    @Autowired
     private TrackService trackService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        trackService = new TrackService(trackRepository); // inject mock manually
-    }
 
     @Test
     public void getTracksReturnsAllTracks() {
@@ -47,7 +39,6 @@ public class TrackServiceTest {
     @Test
     public void randomTrackReturnsNullWhenNoTracks() {
         when(trackRepository.count()).thenReturn(0L);
-        // Also mock findAll to return empty page to avoid NPE
         when(trackRepository.findAll(any(Pageable.class))).thenReturn(new PageImpl<>(new ArrayList<>()));
 
         assertNull(trackService.randomTrack());

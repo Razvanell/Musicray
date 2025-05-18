@@ -11,11 +11,11 @@ public class ServerResponse {
     private String error;
     private Object result;
 
-    public ServerResponse(int status, String error){
+    public ServerResponse(int status, String error) {
         this(status, "", error, null);
     }
 
-    public ServerResponse(int status, String message, Object result){
+    public ServerResponse(int status, String message, Object result) {
         this.status = status;
         this.message = message;
         this.error = " ";

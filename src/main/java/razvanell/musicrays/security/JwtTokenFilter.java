@@ -1,6 +1,10 @@
 package razvanell.musicrays.security;
 
-import razvanell.musicrays.model.user.UserRepository;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,17 +13,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import razvanell.musicrays.model.user.UserRepository;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 /**
- * This class identifies teh token in the request and validates it
- * */
+ * This class identifies the token in the request and validates it
+ */
 @Component
 @AllArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -28,46 +28,50 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
-            throws ServletException, IOException {
-        // Get authorization header and validate
+    protected void doFilterInternal(HttpServletRequest request, @Nonnull HttpServletResponse response, @Nonnull FilterChain chain) throws ServletException, IOException {
+        // Get authorization header and validate it
         final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (header == null)  {
-            chain.doFilter(request, response);
-            return;
-        }
-        if (!header.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
-        }
 
-        // Get jwt token and validate
-        final String token = header.split(" ")[1].trim();
-        if (!jwtTokenUtil.validate(token)) {
+        // If header is missing or doesn't start with "Bearer ", just continue the filter chain without authentication
+        if (header == null || !header.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Get user identity and set it on the spring security context
-        UserDetails userDetails = userRepository
-                .findByEmail(jwtTokenUtil.getUsername(token))
-                .orElse(null);
+        // Extract JWT token from header ("Bearer <token>")
+        final String token = header.substring(7).trim();
 
-        UsernamePasswordAuthenticationToken
-                authentication = new UsernamePasswordAuthenticationToken(
-                userDetails, null,
-                userDetails == null ?
-                        List.of() : userDetails.getAuthorities()
-        );
+        try {
+            // Validate the token (e.g., check signature, expiry, etc.)
+            if (!jwtTokenUtil.validate(token)) {
+                chain.doFilter(request, response);
+                return;
+            }
 
-        authentication.setDetails(
-                new WebAuthenticationDetailsSource().buildDetails(request)
-        );
+            String username = jwtTokenUtil.getUsername(token);
+            UserDetails userDetails = userRepository.findByEmail(username).orElse(null);
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+            // If user not found, continue filter chain without authentication
+            if (userDetails == null) {
+                chain.doFilter(request, response);
+                return;
+            }
+
+            // Create authentication token using user details and authorities
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+            // Set additional details from the request (IP, session ID, etc.)
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            // Set authentication in the Spring Security context
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        } catch (Exception ex) {
+            // In case of any exception (token parsing, DB, etc.) continue filter chain without authentication
+            // Optionally log the exception here
+        }
+
+        // Continue filter chain
         chain.doFilter(request, response);
     }
-
 }
