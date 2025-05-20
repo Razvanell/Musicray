@@ -1,6 +1,7 @@
 package razvanell.musicrays.security.util;
 
 import org.junit.jupiter.api.Test;
+import razvanell.musicrays.util.ServerResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

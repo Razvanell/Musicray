@@ -56,6 +56,7 @@ public class User implements UserDetails {
         return Collections.singletonList(authority);
     }
 
+    @JsonIgnore /* Avoid accidental leaks */
     @Override
     public String getPassword() {
         return this.password;

@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
 
     private void sendConfirmationEmail(User user) {
         String token = generateToken(user);
-        String link = "http://localhost:8080/api/registration/confirm?token=" + token;
+        String link = "http://localhost:8080/api/register/confirm?token=" + token;
         emailSender.send(user.getEmail(), emailBuilder.buildEmail(user.getFirstName(), link));
     }
 

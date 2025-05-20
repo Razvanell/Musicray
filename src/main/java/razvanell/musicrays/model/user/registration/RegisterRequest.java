@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 @Data
 @AllArgsConstructor
-public class RegistrationRequest {
+public class RegisterRequest {
     private final String firstName;
     private final String lastName;
     private final String email;

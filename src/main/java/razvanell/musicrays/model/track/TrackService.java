@@ -15,7 +15,6 @@ public class TrackService {
     private final TrackRepository trackRepository;
 
     public List<Track> getTracks() {
-        System.out.println("Getting tracks");
         return trackRepository.findAll();
     }
 

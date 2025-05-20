@@ -12,14 +12,14 @@ import razvanell.musicrays.model.user.UserService;
 import razvanell.musicrays.model.user.registration.email.EmailValidator;
 import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
 import razvanell.musicrays.model.user.registration.token.ConfirmationTokenService;
-import razvanell.musicrays.security.util.ServerResponse;
+import razvanell.musicrays.util.ServerResponse;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class RegistrationService {
+public class RegisterService {
 
     private final UserRepository userRepository;
     private final UserService userService;
@@ -27,14 +27,14 @@ public class RegistrationService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ConfirmationTokenService confirmationTokenService;
 
-    public ServerResponse register(RegistrationRequest request) {
+    public ServerResponse register(RegisterRequest request) {
         if (!emailValidator.test(request.getEmail())) {
             System.out.println("invalid email");
             return new ServerResponse(HttpStatus.BAD_REQUEST.value(), "Invalid Email");
         }
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            System.out.println("passwords mismatch");
+            System.out.println("passwords mismatch: " + request.getPassword() + " " + request.getConfirmPassword());
             return new ServerResponse(HttpStatus.BAD_REQUEST.value(), "Passwords do not match");
         }
 

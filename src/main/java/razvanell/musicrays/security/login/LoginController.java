@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import razvanell.musicrays.model.user.User;
 import razvanell.musicrays.security.JwtTokenUtil;
-import razvanell.musicrays.security.util.ServerResponse;
+import razvanell.musicrays.util.ServerResponse;
 
 @RestController
 @RequestMapping(path = "api/login")
@@ -32,11 +32,11 @@ public class LoginController {
 
             // Preparing object for client
             LoginResponse loginResponse = new LoginResponse(jwtTokenUtil.generateAccessToken(user), user);
-            return new ServerResponse(HttpStatus.OK.value(), "Welcome " + user.getFirstName(), loginResponse);
+            return new ServerResponse(HttpStatus.OK.value(), "Login successful " + user.getFirstName(), loginResponse);
 
         } catch (BadCredentialsException ex) {
-            System.out.println("Bad credentials");
-            return new ServerResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+            System.out.println("Invalid credentials");
+            return new ServerResponse(HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
         }
     }
 

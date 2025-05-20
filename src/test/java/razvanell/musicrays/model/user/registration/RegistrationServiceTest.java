@@ -12,7 +12,7 @@ import razvanell.musicrays.model.user.UserService;
 import razvanell.musicrays.model.user.registration.email.EmailValidator;
 import razvanell.musicrays.model.user.registration.token.ConfirmationToken;
 import razvanell.musicrays.model.user.registration.token.ConfirmationTokenService;
-import razvanell.musicrays.security.util.ServerResponse;
+import razvanell.musicrays.util.ServerResponse;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class RegistrationServiceTest {
     private UserService userService;
 
     @InjectMocks
-    private RegistrationService registrationService;
+    private RegisterService registrationService;
 
     @Test
     public void testRegister() {
@@ -45,7 +45,7 @@ public class RegistrationServiceTest {
         when(emailValidator.test(anyString())).thenReturn(true);
         when(bCryptPasswordEncoder.encode(any())).thenReturn("foo");
 
-        RegistrationRequest registrationRequest = new RegistrationRequest("Jane", "Doe", "jane.doe@example.org", "iloveyou",
+        RegisterRequest registrationRequest = new RegisterRequest("Jane", "Doe", "jane.doe@example.org", "iloveyou",
                 "iloveyou", "https://example.org/example");
 
         ServerResponse actualRegisterResult = registrationService.register(registrationRequest);
@@ -64,7 +64,7 @@ public class RegistrationServiceTest {
     public void testRegisterInvalidEmail() {
         when(emailValidator.test(anyString())).thenReturn(false);
 
-        ServerResponse actualRegisterResult = registrationService.register(new RegistrationRequest("Jane", "Doe",
+        ServerResponse actualRegisterResult = registrationService.register(new RegisterRequest("Jane", "Doe",
                 "jane.doe@example.org", "iloveyou", "iloveyou", "https://example.org/example"));
 
         assertEquals("Invalid Email", actualRegisterResult.getError());
@@ -80,7 +80,7 @@ public class RegistrationServiceTest {
     public void testRegisterPasswordsDoNotMatch() {
         when(emailValidator.test(anyString())).thenReturn(true);
 
-        ServerResponse actualRegisterResult = registrationService.register(new RegistrationRequest("Jane", "Doe",
+        ServerResponse actualRegisterResult = registrationService.register(new RegisterRequest("Jane", "Doe",
                 "jane.doe@example.org", "User created", "iloveyou", "https://example.org/example"));
 
         assertEquals("Passwords do not match", actualRegisterResult.getError());
@@ -98,7 +98,7 @@ public class RegistrationServiceTest {
         when(emailValidator.test(anyString())).thenReturn(true);
         when(bCryptPasswordEncoder.encode(any())).thenReturn("foo");
 
-        RegistrationRequest registrationRequest = mock(RegistrationRequest.class);
+        RegisterRequest registrationRequest = mock(RegisterRequest.class);
         when(registrationRequest.getImageUrl()).thenReturn("https://example.org/example");
         when(registrationRequest.getLastName()).thenReturn("foo");
         when(registrationRequest.getFirstName()).thenReturn("foo");

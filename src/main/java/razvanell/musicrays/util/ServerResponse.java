@@ -1,4 +1,4 @@
-package razvanell.musicrays.security.util;
+package razvanell.musicrays.util;
 
 import lombok.Getter;
 import lombok.Setter;
